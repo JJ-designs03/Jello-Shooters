@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jello Shooters Scorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday tool for the touchline: fast, big, no thinking needed
+   IDEA a pitch-side tally board: scoreboard on top, chunky counter buttons below
+   PICTURE the live scoreboard (us vs them) with stat counts, always in view
+   COLOUR pitch green ground, scoreboard black, chalk white, kit red for us, lemon for saves
+   TYPE Oswald numerals and labels + Archivo text
+   LAYOUT phone first: scoreboard strip, 2-column grid of big tap buttons, undo + save bar at bottom; laptop: same, centred at 560px */
+:root{color-scheme:dark;--bg:#123d1f;--g1:#2e8b3d;--g2:#287c36;--board:#0d110f;--ink:#f3f8f4;--soft:#b9cbbd;--red:#d9143f;--lemon:#ffd23d;--line:#2a4a33}
+*{box-sizing:border-box;min-width:0}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Archivo,system-ui,sans-serif;overflow-x:clip;-webkit-tap-highlight-color:transparent}
+.app{max-width:560px;margin:0 auto;min-height:100%;display:grid;grid-template-rows:auto auto 1fr auto;gap:12px;padding:max(12px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
+header{display:flex;gap:10px;align-items:center}
+header h1{font:700 20px/1.1 Oswald,sans-serif;text-transform:uppercase;margin:0;flex:1}
+select{font:600 16px Archivo,sans-serif;background:#0d2a16;color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:9px 10px;min-height:44px;max-width:62%}
+select:focus-visible,button:focus-visible{outline:3px solid var(--lemon);outline-offset:2px}
+.board{background:var(--board);border-radius:16px;padding:12px 14px;border:3px solid #26302a}
+.score{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px}
+.team{font:700 15px/1.15 Oswald,sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
+.team.r{text-align:right}
+.team small{display:block;font:400 13px Archivo,sans-serif;text-transform:none;color:var(--soft)}
+.big{font:700 clamp(44px,13vw,64px)/1 Oswald,sans-serif;color:var(--lemon);font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:.02em}
+.mini{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed #2f3a33;text-align:center}
+.mini b{display:block;font:700 22px/1 Oswald,sans-serif;font-variant-numeric:tabular-nums}
+.mini span{font-size:12px;color:var(--soft)}
+.half{display:flex;gap:8px;margin-top:10px}
+.half button{flex:1;min-height:40px;border-radius:999px;border:2px solid #2f3a33;background:transparent;color:var(--soft);font:600 14px Archivo,sans-serif}
+.half button[aria-pressed=true]{background:#fff;color:#111;border-color:#fff}
+.pad{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-content:start}
+.tap{position:relative;min-height:clamp(84px,13vh,120px);border:0;border-radius:16px;color:#fff;font:700 20px/1.1 Oswald,sans-serif;text-transform:uppercase;text-align:left;padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between;background:repeating-linear-gradient(90deg,var(--g1) 0 18px,var(--g2) 18px 36px);box-shadow:0 5px 0 #0b2814;touch-action:manipulation;cursor:pointer}
+.tap:active{transform:translateY(3px);box-shadow:0 2px 0 #0b2814}
+.tap small{font:400 13px/1.2 Archivo,sans-serif;text-transform:none;opacity:.9}
+.tap em{position:absolute;right:12px;top:10px;font:700 30px/1 Oswald,sans-serif;font-style:normal;font-variant-numeric:tabular-nums}
+.tap.us{background:var(--red);box-shadow:0 5px 0 #7d0a24}
+.tap.them{background:#3b4740;box-shadow:0 5px 0 #1d2520}
+.tap.save{background:var(--lemon);color:#111;box-shadow:0 5px 0 #a8861a}
+.tap.flash{animation:fl .35s}
+@keyframes fl{0%{filter:brightness(1.6)}100%{filter:none}}
+@media(prefers-reduced-motion:reduce){.tap.flash{animation:none}}
+.log{font-size:13px;color:var(--soft);min-height:1.4em;text-align:center}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:10px}
+.bar button{min-height:52px;border-radius:14px;font:800 16px Archivo,sans-serif;border:2px solid #fff;background:transparent;color:#fff;cursor:pointer}
+.bar .go{background:#fff;color:#123d1f}
+.bar button:disabled{opacity:.45}
+.more{display:flex;justify-content:center;gap:16px;font-size:14px}
+.more button{background:none;border:0;color:var(--soft);text-decoration:underline;font:inherit;min-height:44px;cursor:pointer}
+.feed{list-style:none;margin:10px 0 0;padding:10px 0 0;border-top:1px dashed #2f3a33;display:grid;gap:4px;font-size:14px;color:var(--soft);max-height:9.5em;overflow:auto}
+.feed b{color:var(--ink);font-weight:600}
+.status{display:inline-flex;align-items:center;gap:6px;font:700 13px Archivo,sans-serif;text-transform:uppercase;letter-spacing:.04em;padding:4px 10px;border-radius:999px;background:#2f3a33;color:var(--soft)}
+.status.on{background:var(--red);color:#fff}
+.status.on::before{content:"";width:8px;height:8px;border-radius:50%;background:#fff;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.25}}
+@media(prefers-reduced-motion:reduce){.status.on::before{animation:none}}
+.watch{background:var(--board);border-radius:16px;padding:16px;color:var(--soft);font-size:15px}
+.watch a{color:var(--lemon)}
+[hidden]{display:none!important}
+dialog{border:0;border-radius:16px;background:#fff;color:#111;max-width:min(92vw,420px);padding:20px}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog h2{font:700 22px/1.1 Oswald,sans-serif;text-transform:uppercase;margin:0 0 8px}
+dialog p{margin:0 0 12px}
+dialog pre{background:#f1f5f2;border-radius:10px;padding:10px;white-space:pre-wrap;font-size:14px;overflow-wrap:anywhere}
+dialog .row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+dialog button{min-height:44px;padding:0 16px;border-radius:12px;border:2px solid #123d1f;background:#fff;color:#123d1f;font:800 15px Archivo,sans-serif;cursor:pointer}
+dialog button.p{background:#123d1f;color:#fff}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1 id="title">Match tally</h1><span class="status" id="status">Not started</span>
+    <select id="game" aria-label="Which game"></select>
+  </header>
+
+  <section class="board" aria-live="polite">
+    <div class="score">
+      <div class="team">Jello Shooters<small>Us</small></div>
+      <div class="big"><span id="gf">0</span>–<span id="ga">0</span></div>
+      <div class="team r"><span id="opp">Opponent</span><small id="when">Pick a game</small></div>
+    </div>
+    <div class="mini">
+      <div><b id="m-shots">0</b><span>Shots</span></div>
+      <div><b id="m-ot">0</b><span>On target</span></div>
+      <div><b id="m-saves">0</b><span>Saves</span></div>
+      <div><b id="m-tackles">0</b><span>Tackles</span></div>
+    </div>
+    <div class="half">
+      <button id="h1" aria-pressed="true">1st half</button>
+      <button id="h2" aria-pressed="false">2nd half</button>
+    </div>
+    <ul class="feed" id="feed" hidden></ul>
+  </section>
+
+  <section class="pad" id="pad">
+    <button class="tap us" data-ev="goal">Our goal<small>Counts as a shot on target</small><em id="c-goal">0</em></button>
+    <button class="tap them" data-ev="conceded">They scored<small>Goal against</small><em id="c-conceded">0</em></button>
+    <button class="tap" data-ev="shot_on">Shot on target<small>Saved or blocked on goal</small><em id="c-shot_on">0</em></button>
+    <button class="tap" data-ev="shot_off">Shot off target<small>Wide, high or blocked</small><em id="c-shot_off">0</em></button>
+    <button class="tap save" data-ev="save">Our keeper saved<small>Stopped a shot</small><em id="c-save">0</em></button>
+    <button class="tap" data-ev="tackle">Tackle won<small>Clean ball win</small><em id="c-tackle">0</em></button>
+  </section>
+
+  <div class="watch" id="signin"><p style="margin:0 0 10px">Sign in with your Google account to send the score live to the team website. You can tap without signing in; your taps sync once you do.</p><button id="gbtn" style="min-height:48px;border-radius:12px;border:0;background:#fff;color:#123d1f;font:800 16px Archivo,sans-serif;padding:0 18px;cursor:pointer">Sign in with Google</button></div>
+  <div id="controls">
+    <p class="log" id="log">Tap a button each time something happens. Your taps stay saved on this phone even if you close the page.</p>
+    <div class="bar">
+      <button id="undo" disabled>Undo</button>
+      <button id="save" class="go">Save match</button>
+    </div>
+    <div class="more"><button id="ft">Full time</button><button id="copy">Copy summary</button><button id="reset">Clear this game</button></div>
+  </div>
+</div>
+
+<dialog id="dlg"><h2 id="dt"></h2><div id="db"></div><div class="row" id="dr"></div></dialog>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getDatabase,ref,set,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig={apiKey:"AIzaSyBkSxEEqllHw0evWKav5T-1QODg3k9bejE",authDomain:"jello-shooters-869e4.firebaseapp.com",databaseURL:"https://jello-shooters-869e4-default-rtdb.firebaseio.com",projectId:"jello-shooters-869e4",storageBucket:"jello-shooters-869e4.firebasestorage.app",messagingSenderId:"531743862061",appId:"1:531743862061:web:e574ebc18f06f73af037a4"};
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const fdb=getDatabase(app);
+
+const LABEL={goal:"Our goal",conceded:"They scored",shot_on:"Shot on target",shot_off:"Shot off target",save:"Save",tackle:"Tackle won"};
+const FEED={goal:"GOAL! Jello Shooters score",conceded:"Goal for the opponent",shot_on:"Shot on target",shot_off:"Shot off target",save:"Save by our keeper",tackle:"Tackle won"};
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+let games=store.get("js-games",[{n:1,date:"2026-11-30",opp:"Kicki Sippi"}].concat(Array.from({length:11},(_,i)=>({n:i+2,date:"",opp:""}))));
+let cur=store.get("js-cur",1),half=store.get("js-half",1);
+let tallies=store.get("js-tallies",{}),ended=store.get("js-ended",{}),changedAt=store.get("js-changed",{});
+let signedIn=false;
+
+const evs=()=>tallies[cur]||(tallies[cur]=[]);
+const count=(t,list)=>list.filter(e=>e.t===t).length;
+function totals(list){const goal=count("goal",list),on=count("shot_on",list),off=count("shot_off",list);return {gf:goal,ga:count("conceded",list),shots:goal+on+off,ot:goal+on,saves:count("save",list),tackles:count("tackle",list)}}
+function fmtDate(s){if(!s)return"";const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d).toLocaleDateString("en-CA",{weekday:"short",month:"short",day:"numeric"})}
+const ago=ms=>{const s=Math.max(0,Math.round((Date.now()-ms)/1000));return s<60?"just now":s<3600?Math.round(s/60)+" min ago":Math.round(s/3600)+" h ago"};
+const gameOf=n=>games.find(x=>x.n==n)||{n};
+
+function renderGames(){const sel=$("game");sel.replaceChildren();for(const g of games){const o=document.createElement("option");o.value=g.n;o.textContent=`Game ${g.n}${g.opp?" · "+g.opp:""}${g.date?" · "+fmtDate(g.date):""}`;if(g.n==cur)o.selected=true;sel.append(o)}}
+function render(){
+  const g=gameOf(cur),list=evs(),T=totals(list);
+  $("gf").textContent=T.gf;$("ga").textContent=T.ga;$("opp").textContent=g.opp||"Opponent";$("when").textContent=g.date?fmtDate(g.date):"Game "+cur;
+  $("m-shots").textContent=T.shots;$("m-ot").textContent=T.ot;$("m-saves").textContent=T.saves;$("m-tackles").textContent=T.tackles;
+  $("h1").setAttribute("aria-pressed",half===1);$("h2").setAttribute("aria-pressed",half===2);
+  const st=ended[cur]?"ft":list.length?"live":"none",el=$("status");el.className="status"+(st==="live"?" on":"");el.textContent=st==="live"?"Live":st==="ft"?"Full time":"Not started";
+  const f=$("feed");f.replaceChildren();const items=list.slice(-8).reverse();f.hidden=!items.length;
+  for(const it of items){const li=document.createElement("li");const b=document.createElement("b");b.textContent=FEED[it.t];li.append(b,document.createTextNode(` · ${it.h===2?"2nd":"1st"} half · ${ago(it.at)}`));f.append(li)}
+  for(const k of Object.keys(LABEL)) $("c-"+k).textContent=count(k,list);
+  $("undo").disabled=!list.length;$("ft").textContent=ended[cur]?"Reopen match":"Full time";
+  store.set("js-tallies",tallies);store.set("js-cur",cur);store.set("js-half",half);store.set("js-ended",ended);store.set("js-changed",changedAt);
+}
+
+let inflight=false,dirty=false;
+async function pushLive(){
+  if(!signedIn)return;
+  if(inflight){dirty=true;return}
+  inflight=true;dirty=false;
+  const g=gameOf(cur),list=evs(),T=totals(list);
+  try{
+    await set(ref(fdb,"live"),{n:cur,opp:g.opp||"",date:g.date||"",half,state:ended[cur]?"ft":list.length?"live":"none",gf:T.gf,ga:T.ga,shots:T.shots,onTarget:T.ot,saves:T.saves,tackles:T.tackles,events:list.map(e=>({t:e.t,h:e.h,at:e.at})),changedAt:changedAt[cur]||0,updatedAt:Date.now()});
+  }catch(e){$("log").textContent="Couldn't reach the live score (no signal?). Taps are saved here and will sync on the next tap."}
+  inflight=false;if(dirty)pushLive();
+}
+function changed(msg){changedAt[cur]=Date.now();if(msg)$("log").textContent=msg;render();pushLive()}
+
+function dialog(title,bodyNode,buttons){$("dt").textContent=title;$("db").replaceChildren(bodyNode);$("dr").replaceChildren();return new Promise(res=>{for(const [label,val,primary] of buttons){const b=document.createElement("button");b.textContent=label;if(primary)b.className="p";b.onclick=()=>{$("dlg").close();res(val)};$("dr").append(b)}$("dlg").showModal()})}
+const para=t=>{const p=document.createElement("p");p.textContent=t;return p};
+const box=(t,pre)=>{const d=document.createElement("div");d.append(para(t));if(pre){const p=document.createElement("pre");p.textContent=pre;d.append(p)}return d};
+function summary(){const g=gameOf(cur),T=totals(evs()),h1=totals(evs().filter(e=>e.h===1));return `Game ${cur}${g.opp?" vs "+g.opp:""}${g.date?" ("+g.date+")":""}\nScore: ${T.gf}–${T.ga} (half time ${h1.gf}–${h1.ga})\nShots: ${T.shots} · On target: ${T.ot} · Saves: ${T.saves} · Tackles: ${T.tackles}`}
+
+async function save(){
+  if(!signedIn){await dialog("Sign in first",box("Sign in with Google at the top to save. Your taps are kept on this phone. Or copy the summary:",summary()),[["Close",0,true]]);return}
+  const g=gameOf(cur),T=totals(evs()),h1=totals(evs().filter(e=>e.h===1));
+  $("save").disabled=true;$("save").textContent="Saving…";
+  try{
+    await set(ref(fdb,"matches/g"+cur),{n:cur,date:g.date||"",opp:g.opp||"",gf:T.gf,ga:T.ga,shots:T.shots,onTarget:T.ot,saves:T.saves,tackles:T.tackles,halfTime:{gf:h1.gf,ga:h1.ga},events:evs().length,savedAt:new Date().toISOString()});
+    ended[cur]=true;changed(`Saved Game ${cur}.`);
+    await dialog("Saved",box("Saved. The website shows full time, and Friday's update copies these numbers into your sheet. Save again any time to replace them.",summary()),[["Done",0,true]]);
+  }catch(e){await dialog("Didn't save",box("Couldn't reach the database. Your taps are still on this phone. Try again, or copy the summary:",summary()),[["Close",0,true]])}
+  finally{$("save").disabled=false;$("save").textContent="Save match"}
+}
+
+document.querySelectorAll(".tap").forEach(b=>b.addEventListener("click",()=>{const t=b.dataset.ev;evs().push({t,h:half,at:Date.now()});delete ended[cur];b.classList.remove("flash");void b.offsetWidth;b.classList.add("flash");try{navigator.vibrate&&navigator.vibrate(25)}catch(e){}changed(`+1 ${LABEL[t]} (${half===1?"1st":"2nd"} half)`)}));
+$("undo").addEventListener("click",()=>{const e=evs().pop();changed(e?`Undid ${LABEL[e.t]}`:"")});
+$("h1").addEventListener("click",()=>{half=1;changed()});
+$("h2").addEventListener("click",()=>{half=2;changed("Second half. Taps now count for the 2nd half.")});
+$("game").addEventListener("change",e=>{cur=Number(e.target.value);half=1;changed()});
+$("save").addEventListener("click",save);
+$("ft").addEventListener("click",()=>{if(ended[cur]){delete ended[cur];changed("Match reopened.")}else{ended[cur]=true;changed("Full time. Tap Save match to keep the numbers for Friday's update.")}});
+$("reset").addEventListener("click",async()=>{if(await dialog("Clear this game?",box(`This deletes every tap for Game ${cur} on this phone and resets the live score. The sheet isn't changed.`),[["Cancel",false],["Clear",true,true]])){tallies[cur]=[];delete ended[cur];changed("Cleared.")}});
+$("copy").addEventListener("click",async()=>{const s=summary();try{await navigator.clipboard.writeText(s);$("log").textContent="Summary copied."}catch(e){await dialog("Summary",box("Copy this:",s),[["Close",0,true]])}});
+
+// sign-in
+const provider=new GoogleAuthProvider();
+$("gbtn").addEventListener("click",async()=>{try{await signInWithPopup(auth,provider)}catch(e){if(e&&(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment"))signInWithRedirect(auth,provider);else $("log").textContent="Sign-in didn't finish: "+(e&&e.code||"try again")}});
+getRedirectResult(auth).catch(()=>{});
+onAuthStateChanged(auth,u=>{
+  signedIn=!!u&&u.email==="elitetracker.gaming@gmail.com";
+  $("signin").hidden=signedIn;
+  if(u&&!signedIn)$("log").textContent=`Signed in as ${u.email}, which can't update the score. Use elitetracker.gaming@gmail.com.`;
+  if(signedIn){$("log").textContent="Signed in. Taps go live on the team website.";pushLive()}
+});
+
+// another of your devices scoring: adopt newer state
+onValue(ref(fdb,"live"),snap=>{
+  const d=snap.val();if(!d||!Array.isArray(d.events)||typeof d.n!=="number")return;
+  if((d.changedAt||0)<=(changedAt[d.n]||0))return;
+  tallies[d.n]=d.events.map(e=>({t:e.t,h:e.h,at:e.at}));changedAt[d.n]=d.changedAt||0;
+  if(d.state==="ft")ended[d.n]=true;else delete ended[d.n];
+  if(d.n!==cur){cur=d.n;renderGames()}
+  half=d.half===2?2:1;$("log").textContent="Synced with the live score.";render();
+});
+
+// fixtures from the website's data
+fetch("data.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{
+  const list=(d&&d.games||[]).filter(g=>typeof g.n==="number").map(g=>({n:g.n,date:g.date||"",opp:g.opp||""}));
+  if(list.length){const known=new Set(list.map(g=>g.n));for(const g of games)if(!known.has(g.n))list.push(g);games=list.sort((a,b)=>a.n-b.n);store.set("js-games",games);renderGames();render()}
+}).catch(()=>{});
+
+renderGames();render();
+</script>
+</body>
+</html>

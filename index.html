@@ -53,6 +53,13 @@ h1{font-size:clamp(44px,7vw,84px);margin-bottom:8px;text-shadow:0 3px 0 rgba(0,0
 .row b{font:700 clamp(19px,2.2vw,24px)/1.1 Oswald,sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
 .row em{font:700 30px/1 Oswald,sans-serif;font-style:normal;text-align:center;background:#000;border-radius:6px;padding:4px 0;color:var(--lemon);font-variant-numeric:tabular-nums}
 .board .meta{display:flex;gap:6px 16px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:2px dashed #2b332e;font-size:15px;color:#d6e2d9}
+.livechip{display:inline-flex;align-items:center;gap:6px;background:var(--red);color:#fff;border-radius:999px;padding:2px 10px;font:800 13px Archivo,sans-serif;letter-spacing:.04em}
+.livechip::before{content:"";width:8px;height:8px;border-radius:50%;background:#fff;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
+@media(prefers-reduced-motion:reduce){.livechip::before{animation:none}}
+.lfeed{list-style:none;margin:10px 0 0;padding:10px 0 0;border-top:2px dashed #2b332e;display:grid;gap:3px;font-size:14px;color:#d6e2d9}
+.lstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px;text-align:center;font-size:12px;color:#d6e2d9}
+.lstats b{display:block;font:700 20px/1.1 Oswald,sans-serif;color:#fff}
 .cd{background:var(--lemon);color:#111;border-radius:999px;padding:1px 11px;font-weight:800;white-space:nowrap}
 h2{font-size:clamp(32px,4vw,46px);margin-bottom:6px}
 .sub{color:var(--soft);margin:0 0 22px}
@@ -104,7 +111,7 @@ footer .wrap{display:flex;gap:10px 28px;flex-wrap:wrap;justify-content:space-bet
     <symbol id="crest" viewBox="0 0 30 34"><path d="M15 1 L28 5 V16 C28 25 21 30 15 33 C9 30 2 25 2 16 V5 Z" fill="#d9143f" stroke="#fff" stroke-width="2"/><path d="M8 11 H22 L20 25 Q15 27 10 25 Z" fill="#ffd23d"/><circle cx="15" cy="8" r="3" fill="#fff"/></symbol>
   </defs>
 </svg>
-<nav><div class="wrap"><div class="brand"><svg class="crest"><use href="#crest"/></svg><span>Jello Shooters</span></div><a class="live" href="https://claude.ai/artifact/TNtEszcR5hKXgetoKUtYxX">Follow live</a><a href="#fixtures">Fixtures</a><a href="#stats">Stats</a><a href="#table">Table</a></div></nav>
+<nav><div class="wrap"><div class="brand"><svg class="crest"><use href="#crest"/></svg><span>Jello Shooters</span></div><a class="live" href="#next">Live score</a><a href="#fixtures">Fixtures</a><a href="#stats">Stats</a><a href="#table">Table</a></div></nav>
 
 <header class="hero band">
   <svg class="lines" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -239,12 +246,39 @@ function render(D){
   $('tsub').textContent=T.length?'Division 4 standings, copied from the league site.':'Division 4 standings.';
   $('tbl').innerHTML=T.length?`<div class="scroll"><table><thead><tr><th>#</th><th>Team</th><th>GP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead><tbody>${T.map(r=>`<tr class="${String(r.team).trim().toLowerCase()===String(team).trim().toLowerCase()?'me':''}"><td>${esc(r.pos)}</td><td>${esc(r.team)}</td><td>${esc(r.gp)}</td><td>${esc(r.w)}</td><td>${esc(r.d)}</td><td>${esc(r.l)}</td><td>${esc(r.gf)}</td><td>${esc(r.ga)}</td><td>${num(r.gd)&&r.gd>0?'+':''}${esc(r.gd)}</td><td>${esc(r.pts)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">The table fills in after the first round of games on November 30.</div>';
 
+  window.applyLive&&window.applyLive();
   if(D.updated){const u=new Date(D.updated);if(!isNaN(u)) $('upd').textContent=`Last updated ${DAY[u.getDay()]} ${u.getDate()} ${MON[u.getMonth()]} ${u.getFullYear()}. Updated weekly on Fridays.`;}
 }
 
 render(FALLBACK);
 fetch('data.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{if(d) render(d)}).catch(()=>{});
 }
+</script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getDatabase,ref,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const app=initializeApp({apiKey:"AIzaSyBkSxEEqllHw0evWKav5T-1QODg3k9bejE",authDomain:"jello-shooters-869e4.firebaseapp.com",databaseURL:"https://jello-shooters-869e4-default-rtdb.firebaseio.com",projectId:"jello-shooters-869e4",appId:"1:531743862061:web:e574ebc18f06f73af037a4"});
+const db=getDatabase(app);
+const FEED={goal:"GOAL! Jello Shooters score",conceded:"Goal for the opponent",shot_on:"Shot on target",shot_off:"Shot off target",save:"Save by our keeper",tackle:"Tackle won"};
+let live=null;
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ago=ms=>{const s=Math.max(0,Math.round((Date.now()-ms)/1000));return s<60?"just now":s<3600?Math.round(s/60)+" min ago":Math.round(s/3600)+" h ago"};
+function active(){if(!live||typeof live.gf!=="number")return false;if(live.state==="live")return Date.now()-(live.updatedAt||0)<4*3600e3;if(live.state==="ft")return Date.now()-(live.updatedAt||0)<12*3600e3;return false}
+window.applyLive=function(){
+  if(!active())return;
+  const d=live,team=document.getElementById("team").textContent||"Jello Shooters";
+  const n=x=>Number.isFinite(+x)?+x:0;
+  const ev=Array.isArray(d.events)?d.events.slice(-4).reverse():[];
+  const head=d.state==="ft"?`<span>Full time · Game ${esc(d.n)}</span>`:`<span class="livechip">LIVE</span><span>${d.half===2?"2nd":"1st"} half · Game ${esc(d.n)}</span>`;
+  document.getElementById("next").innerHTML=`<div class="k">${head}</div>`+
+   `<div class="row"><i style="background:var(--red)"></i><b>${esc(team)}</b><em>${n(d.gf)}</em></div>`+
+   `<div class="row"><i style="background:#8a9a8f"></i><b>${esc(d.opp||"Opponent")}</b><em>${n(d.ga)}</em></div>`+
+   `<div class="lstats"><div><b>${n(d.shots)}</b>Shots</div><div><b>${n(d.onTarget)}</b>On target</div><div><b>${n(d.saves)}</b>Saves</div><div><b>${n(d.tackles)}</b>Tackles</div></div>`+
+   (ev.length?`<ul class="lfeed">${ev.map(e=>`<li>${esc(FEED[e.t]||"")} · ${e.h===2?"2nd":"1st"} half · ${ago(e.at)}</li>`).join("")}</ul>`:"")+
+   `<div class="meta"><span>Updated ${ago(d.updatedAt||Date.now())}</span></div>`;
+};
+onValue(ref(db,"live"),snap=>{live=snap.val();window.applyLive()});
+setInterval(()=>window.applyLive(),30000);
 </script>
 </body>
 </html>
