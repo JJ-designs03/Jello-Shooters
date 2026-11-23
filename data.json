@@ -1,0 +1,12 @@
+{
+  "team": "Jello Shooters",
+  "league": "Monday Winter Co-Ed @ uOttawa",
+  "division": "Division 4",
+  "season": "Winter 2026",
+  "leagueUrl": "https://www.ottawafootysevens.com/league_fixtures.seam?divisionId=6689",
+  "updated": "2026-11-23T14:35",
+  "games": [
+    {"n": 1, "date": "2026-11-30", "time": "7:00pm", "field": "RA Centre Turf (3)", "opp": "Kicki Sippi", "gf": null, "ga": null, "shots": null, "onTarget": null, "saves": null, "tackles": null, "note": ""}
+  ],
+  "table": []
+}

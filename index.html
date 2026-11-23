@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jello Shooters Team Page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400;62..125,600;112,800;125,900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday-occasion: a rec-league club page, matchday energy, tidy
+   IDEA a matchday programme: mowed pitch, chalk lines, stadium scoreboard, kit colours
+   PICTURE striped pitch with centre circle and a ball, scoreboard for the next match
+   COLOUR pitch greens, chalk white, cherry kit red accent, scoreboard black, lemon for upcoming
+   TYPE Oswald (stadium lettering) for titles and numerals + Archivo text
+   LAYOUT laptop: pitch band with crest/name/figures left, ball+scoreboard right; phone: stacked name, scoreboard, figures */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0c140e);--ink:light-dark(#0f1f14,#eef6ef);--soft:light-dark(#5a6b5e,#a9bcad);--line:light-dark(#dfe8e0,#22352a);--paper:light-dark(#f1f7ef,#122017);--g1:#2e8b3d;--g2:#287c36;--gd:#123d1f;--red:#d9143f;--lemon:#ffd23d;--board:#111613;--win:light-dark(#1d8a46,#5fd69a);--loss:light-dark(#c0163a,#ff7d95);--draw:light-dark(#6c7a70,#a9bcad)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Archivo,system-ui,sans-serif;overflow-x:clip}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;position:relative}
+.band{padding-block:clamp(28px,4vw,64px);padding-left:max(5vw,16px);padding-right:max(5vw,16px)}
+nav{position:sticky;top:0;z-index:5;background:var(--gd);color:#fff;padding:0 max(5vw,16px);border-bottom:3px solid var(--red)}
+nav .wrap{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-height:56px}
+nav .brand{display:flex;align-items:center;gap:10px;margin-right:auto;font:700 19px/1 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.02em}
+nav a{text-decoration:none;padding:10px 12px;border-radius:999px;font-weight:600;font-size:15px}
+nav a:hover,nav a:focus-visible{background:rgba(255,255,255,.14);outline:none}
+.crest{width:30px;height:34px;flex:none}
+.hero{position:relative;color:#fff;background:repeating-linear-gradient(90deg,var(--g1) 0 9%,var(--g2) 9% 18%);overflow:hidden}
+.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:center}
+h1,h2{font-family:Oswald,Archivo,sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.005em;line-height:1.02;margin:0;text-wrap:balance}
+h1{font-size:clamp(44px,7vw,84px);margin-bottom:8px;text-shadow:0 3px 0 rgba(0,0,0,.18)}
+.lg{margin:0 0 24px;font-size:17px;opacity:.95}
+.figs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:3px solid #fff}
+.figs div{padding:12px 10px 0 0}
+.figs strong{display:block;font:700 clamp(30px,4vw,46px)/1.1 Oswald,sans-serif;white-space:nowrap;font-variant-numeric:tabular-nums}
+.figs span{font-size:14px;opacity:.92}
+.stage{display:grid;grid-template-columns:minmax(0,120px) minmax(0,1fr);gap:18px;align-items:end}
+.ball svg{width:100%;height:auto;display:block}
+.bounce{animation:bounce 1.8s cubic-bezier(.3,0,.4,1) 2}
+@keyframes bounce{0%,100%{transform:translateY(0)}45%{transform:translateY(-38px) rotate(-40deg)}}
+@media(prefers-reduced-motion:reduce){.bounce{animation:none}}
+.board{background:var(--board);color:#fff;border-radius:14px;padding:16px 18px 14px;border:4px solid #2b332e;box-shadow:0 10px 0 rgba(0,0,0,.25)}
+.board .k{display:flex;justify-content:space-between;gap:10px;font:500 14px/1.2 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--lemon);margin-bottom:10px}
+.row{display:grid;grid-template-columns:10px minmax(0,1fr) 2.2em;gap:12px;align-items:center;padding:6px 0}
+.row+.row{border-top:1px solid #2b332e}
+.row i{width:10px;height:26px;border-radius:2px}
+.row b{font:700 clamp(19px,2.2vw,24px)/1.1 Oswald,sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
+.row em{font:700 30px/1 Oswald,sans-serif;font-style:normal;text-align:center;background:#000;border-radius:6px;padding:4px 0;color:var(--lemon);font-variant-numeric:tabular-nums}
+.board .meta{display:flex;gap:6px 16px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:2px dashed #2b332e;font-size:15px;color:#d6e2d9}
+.cd{background:var(--lemon);color:#111;border-radius:999px;padding:1px 11px;font-weight:800;white-space:nowrap}
+h2{font-size:clamp(32px,4vw,46px);margin-bottom:6px}
+.sub{color:var(--soft);margin:0 0 22px}
+.sec{border-top:6px solid var(--g1)}
+.fx{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.fx li{display:grid;grid-template-columns:5.4em minmax(0,1fr) auto;gap:16px;align-items:center;padding:12px 16px;border:1px solid var(--line);border-left:6px solid var(--g1);border-radius:10px;background:var(--bg)}
+.fx li.W{border-left-color:var(--win)}.fx li.L{border-left-color:var(--loss)}.fx li.D{border-left-color:var(--draw)}
+.fx .dt{font:700 24px/1.05 Oswald,sans-serif;text-transform:uppercase}
+.fx .dt small{display:block;font:600 13px/1.4 Archivo,sans-serif;text-transform:none;color:var(--soft)}
+.fx .op{font-size:18px;font-weight:600}
+.fx .op small{display:block;font-weight:400;font-size:14px;color:var(--soft)}
+.sc{font:700 24px/1 Oswald,sans-serif;white-space:nowrap;display:flex;gap:10px;align-items:center;font-variant-numeric:tabular-nums}
+.pill{font:800 13px/1 Archivo,sans-serif;border-radius:999px;padding:6px 11px;color:#fff;text-transform:uppercase;letter-spacing:.03em}
+.pill.W{background:var(--win)}.pill.L{background:var(--loss)}.pill.D{background:var(--draw)}
+.pill.up{background:var(--lemon);color:#111}
+.alt{background:var(--paper)}
+.stats{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:clamp(24px,4vw,56px)}
+.meters{display:grid;gap:18px}
+.meter b{display:flex;justify-content:space-between;font-weight:600}
+.meter b span{font:700 26px/1 Oswald,sans-serif;font-variant-numeric:tabular-nums}
+.track{height:14px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:6px}
+.track i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--g1) 0 14px,var(--g2) 14px 28px);border-radius:999px;transition:width .6s}
+.bars{display:grid;gap:10px}
+.bar{display:grid;grid-template-columns:3.4em minmax(0,1fr) 4.6em;gap:10px;align-items:center;font-size:14px}
+.bar .t{position:relative;height:22px;background:var(--line);border-radius:6px}
+.bar .t i{position:absolute;left:0;top:0;bottom:0;border-radius:6px}
+.bar .s{background:color-mix(in srgb,var(--g1) 35%,transparent)}
+.bar .o{background:var(--g1)}
+.bar em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.key{display:flex;gap:16px;font-size:14px;color:var(--soft);margin:0 0 12px;flex-wrap:wrap}
+.key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.empty{border:2px dashed var(--line);border-radius:14px;padding:22px;color:var(--soft);background:var(--bg)}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{padding:10px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font:500 14px/1.2 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:var(--gd)}
+th:nth-child(2),td:nth-child(2){text-align:left;white-space:normal}
+tr.me td{background:color-mix(in srgb,var(--lemon) 45%,transparent);font-weight:800}
+td:last-child{font-weight:900}
+footer{background:var(--gd);color:#fff;font-size:15px;border-top:6px solid #fff;outline:3px solid var(--g1)}
+footer .wrap{display:flex;gap:10px 28px;flex-wrap:wrap;justify-content:space-between}
+@media(max-width:820px){.hero .wrap,.stats{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){nav .brand span{display:none}.stage{grid-template-columns:minmax(0,72px) minmax(0,1fr)}.figs{grid-template-columns:repeat(2,minmax(0,1fr))}.fx li{grid-template-columns:4.6em minmax(0,1fr);padding:12px}.fx .sc{grid-column:2}table{font-size:13px}th,td{padding:8px 4px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="crest" viewBox="0 0 30 34"><path d="M15 1 L28 5 V16 C28 25 21 30 15 33 C9 30 2 25 2 16 V5 Z" fill="#d9143f" stroke="#fff" stroke-width="2"/><path d="M8 11 H22 L20 25 Q15 27 10 25 Z" fill="#ffd23d"/><circle cx="15" cy="8" r="3" fill="#fff"/></symbol>
+  </defs>
+</svg>
+<nav><div class="wrap"><div class="brand"><svg class="crest"><use href="#crest"/></svg><span>Jello Shooters</span></div><a href="#fixtures">Fixtures</a><a href="#stats">Stats</a><a href="#table">Table</a></div></nav>
+
+<header class="hero band">
+  <svg class="lines" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="5">
+      <rect x="20" y="20" width="1160" height="560"/>
+      <line x1="600" y1="20" x2="600" y2="580"/>
+      <circle cx="600" cy="300" r="95"/>
+      <rect x="20" y="150" width="150" height="300"/>
+      <rect x="1030" y="150" width="150" height="300"/>
+      <rect x="20" y="230" width="55" height="140"/>
+      <rect x="1125" y="230" width="55" height="140"/>
+      <path d="M170 240 A70 70 0 0 1 170 360"/>
+      <path d="M1030 240 A70 70 0 0 0 1030 360"/>
+    </g>
+    <circle cx="600" cy="300" r="7" fill="#fff" fill-opacity=".35"/>
+  </svg>
+  <div class="wrap">
+    <div>
+      <h1 id="team">Jello Shooters</h1>
+      <p class="lg" id="lg">Monday Winter Co-Ed @ uOttawa · Division 4 · Winter 2026</p>
+      <div class="figs" id="figs"></div>
+    </div>
+    <div class="stage">
+      <div class="ball" aria-hidden="true">
+        <svg viewBox="0 0 120 140">
+          <ellipse cx="60" cy="132" rx="38" ry="6" fill="#000" opacity=".22"/>
+          <g class="bounce" style="transform-origin:60px 62px">
+            <circle cx="60" cy="62" r="54" fill="#fff"/>
+            <path d="M60 22 L84 40 L75 68 L45 68 L36 40 Z" fill="#111613"/>
+            <path d="M14 46 L28 36 L36 40 L45 68 L30 84 L10 76 Z" fill="#111613" opacity=".92"/>
+            <path d="M106 46 L92 36 L84 40 L75 68 L90 84 L110 76 Z" fill="#111613" opacity=".92"/>
+            <path d="M45 112 L42 96 L30 84 L45 68 L75 68 L90 84 L78 96 L75 112 Q60 117 45 112 Z" fill="none" stroke="#111613" stroke-width="2"/>
+            <path d="M42 96 L50 108 L70 108 L78 96 L75 84 L45 84 Z" fill="#111613" opacity=".9"/>
+            <path d="M60 22 V8 M84 40 L98 28 M36 40 L22 28" stroke="#111613" stroke-width="2"/>
+            <path d="M20 40 A54 54 0 0 1 60 8" fill="none" stroke="#fff" stroke-width="5" opacity=".7"/>
+            <circle cx="60" cy="62" r="54" fill="none" stroke="#c9d3cc" stroke-width="2"/>
+          </g>
+        </svg>
+      </div>
+      <div class="board" id="next"></div>
+    </div>
+  </div>
+</header>
+
+<section class="band sec" id="fixtures"><div class="wrap">
+  <h2>Fixtures and results</h2>
+  <p class="sub" id="fxsub">Every Monday night. Scores land here after the league posts them.</p>
+  <ul class="fx" id="fx"></ul>
+</div></section>
+
+<section class="band alt sec" id="stats"><div class="wrap">
+  <h2>How we're playing</h2>
+  <p class="sub">From our own match notes: shots, shots on target, saves and successful tackles.</p>
+  <div class="stats">
+    <div class="meters" id="meters"></div>
+    <div id="pergame"></div>
+  </div>
+</div></section>
+
+<section class="band sec" id="table"><div class="wrap">
+  <h2>League table</h2>
+  <p class="sub" id="tsub">Division 4 standings.</p>
+  <div id="tbl"></div>
+</div></section>
+
+<footer class="band"><div class="wrap">
+  <span id="upd">Updated weekly on Fridays.</span>
+  <a id="src" href="https://www.ottawafootysevens.com/league_fixtures.seam?divisionId=6689">Official schedule on Ottawa Footy Sevens</a>
+</div></footer>
+
+<script>
+{
+const FALLBACK={"team":"Jello Shooters","league":"Monday Winter Co-Ed @ uOttawa","division":"Division 4","season":"Winter 2026","leagueUrl":"https://www.ottawafootysevens.com/league_fixtures.seam?divisionId=6689","updated":"2026-11-23T14:35","games":[{"n":1,"date":"2026-11-30","time":"7:00pm","field":"RA Centre Turf (3)","opp":"Kicki Sippi","gf":null,"ga":null,"shots":null,"onTarget":null,"saves":null,"tackles":null,"note":""}],"table":[]};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>typeof v==='number'&&isFinite(v);
+const toDate=s=>{const [y,m,d]=String(s).split('-').map(Number);return new Date(y,(m||1)-1,d||1)};
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAY=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const res=g=>num(g.gf)&&num(g.ga)?(g.gf>g.ga?'W':g.gf<g.ga?'L':'D'):'';
+const pct=(a,b)=>b>0?Math.round(a/b*100):null;
+const boardRows=(us,them,a,b)=>`<div class="row"><i style="background:var(--red)"></i><b>${esc(us)}</b><em>${a}</em></div><div class="row"><i style="background:#8a9a8f"></i><b>${esc(them)}</b><em>${b}</em></div>`;
+
+function render(D){
+  const team=D.team||'Jello Shooters';
+  const games=(D.games||[]).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  const played=games.filter(g=>res(g));
+  const W=played.filter(g=>res(g)==='W').length,Dr=played.filter(g=>res(g)==='D').length,L=played.filter(g=>res(g)==='L').length;
+  const GF=played.reduce((s,g)=>s+g.gf,0),GA=played.reduce((s,g)=>s+g.ga,0);
+  $('team').textContent=team;
+  $('lg').textContent=[D.league,D.division,D.season].filter(Boolean).join(' · ');
+  if(D.leagueUrl) $('src').href=D.leagueUrl;
+  const gd=GF-GA;
+  $('figs').innerHTML=[[played.length,'Played'],[W+'-'+Dr+'-'+L,'W-D-L'],[3*W+Dr,'Points'],[(gd>0?'+':'')+gd,'Goal diff']].map(([v,l])=>`<div><strong>${esc(v)}</strong><span>${l}</span></div>`).join('');
+
+  const today=new Date();today.setHours(0,0,0,0);
+  const next=games.find(g=>!res(g)&&toDate(g.date)>=today);
+  const last=played[played.length-1];
+  if(next){
+    const d=toDate(next.date),days=Math.round((d-today)/864e5);
+    const cd=days===0?'Matchday':days===1?'Tomorrow':'In '+days+' days';
+    $('next').innerHTML=`<div class="k"><span>Next match · Game ${esc(next.n)}</span><span>${DAY[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]}</span></div>${boardRows(team,next.opp,'–','–')}<div class="meta"><span class="cd">${cd}</span><span>Kick-off ${esc(next.time)}</span><span>${esc(next.field)}</span></div>`;
+  }else if(last){
+    $('next').innerHTML=`<div class="k"><span>Full time · Game ${esc(last.n)}</span></div>${boardRows(team,last.opp,last.gf,last.ga)}<div class="meta"><span>Next fixture not posted yet</span></div>`;
+  }else{
+    $('next').innerHTML=`<div class="k"><span>Next match</span></div>${boardRows(team,'To be announced','–','–')}<div class="meta"><span>Check back once the league posts the schedule.</span></div>`;
+  }
+
+  $('fxsub').textContent=games.length?`${games.length} game${games.length===1?'':'s'} on the schedule so far. Scores land here after the league posts them.`:'No fixtures posted yet.';
+  $('fx').innerHTML=games.map(g=>{
+    const d=toDate(g.date),r=res(g);
+    const sc=r?`<span>${g.gf}–${g.ga}</span><span class="pill ${r}">${r==='W'?'Win':r==='L'?'Loss':'Draw'}</span>`:(d>=today?'<span class="pill up">Upcoming</span>':'<span class="pill D">Awaiting score</span>');
+    return `<li class="${r}"><div class="dt">${d.getDate()} ${MON[d.getMonth()]}<small>${DAY[d.getDay()]} · ${esc(g.time)}</small></div><div class="op">vs ${esc(g.opp)}<small>Game ${esc(g.n)} · ${esc(g.field)}${g.note?' · '+esc(g.note):''}</small></div><div class="sc">${sc}</div></li>`;
+  }).join('')||'<li><div class="op">Fixtures appear once the league posts them.</div></li>';
+
+  const withShots=games.filter(g=>num(g.shots));
+  const sh=withShots.reduce((s,g)=>s+g.shots,0),ot=withShots.reduce((s,g)=>s+(num(g.onTarget)?g.onTarget:0),0);
+  const withSaves=games.filter(g=>num(g.saves)&&num(g.ga));
+  const sv=withSaves.reduce((s,g)=>s+g.saves,0),sga=withSaves.reduce((s,g)=>s+g.ga,0);
+  const withT=games.filter(g=>num(g.tackles));
+  const tk=withT.length?withT.reduce((s,g)=>s+g.tackles,0)/withT.length:null;
+  const conv=pct(played.filter(g=>num(g.shots)).reduce((s,g)=>s+g.gf,0),sh);
+  const m=[['Shot accuracy',pct(ot,sh),'%',`${ot} of ${sh} shots on target`],['Conversion',conv,'%','goals per shot'],['Save %',pct(sv,sv+sga),'%',`${sv} saves, ${sga} conceded`],['Tackles per game',tk===null?null:Math.round(tk*10)/10,'',`over ${withT.length} game${withT.length===1?'':'s'}`]];
+  $('meters').innerHTML=m.map(([l,v,u,note])=>{
+    const w=v===null?0:u==='%'?v:Math.min(100,v*5);
+    return `<div class="meter"><b>${l}<span>${v===null?'–':v+u}</span></b><div class="track"><i style="width:${w}%"></i></div><small style="color:var(--soft)">${v===null?'Not tracked yet':esc(note)}</small></div>`;
+  }).join('');
+  const maxS=Math.max(1,...withShots.map(g=>g.shots));
+  $('pergame').innerHTML=withShots.length?`<p class="key"><span><i style="background:color-mix(in srgb,var(--g1) 35%,transparent)"></i>Shots</span><span><i style="background:var(--g1)"></i>On target</span></p><div class="bars">${withShots.map(g=>`<div class="bar"><span>G${esc(g.n)}</span><div class="t"><i class="s" style="width:${g.shots/maxS*100}%"></i><i class="o" style="width:${(num(g.onTarget)?g.onTarget:0)/maxS*100}%"></i></div><em>${num(g.onTarget)?g.onTarget:0}/${g.shots}</em></div>`).join('')}</div>`:'<div class="empty">Shots per game show up here once we log our first match. Add shots, on target, saves and tackles in the tracker sheet after each game.</div>';
+
+  const T=D.table||[];
+  $('tsub').textContent=T.length?'Division 4 standings, copied from the league site.':'Division 4 standings.';
+  $('tbl').innerHTML=T.length?`<div class="scroll"><table><thead><tr><th>#</th><th>Team</th><th>GP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead><tbody>${T.map(r=>`<tr class="${String(r.team).trim().toLowerCase()===String(team).trim().toLowerCase()?'me':''}"><td>${esc(r.pos)}</td><td>${esc(r.team)}</td><td>${esc(r.gp)}</td><td>${esc(r.w)}</td><td>${esc(r.d)}</td><td>${esc(r.l)}</td><td>${esc(r.gf)}</td><td>${esc(r.ga)}</td><td>${num(r.gd)&&r.gd>0?'+':''}${esc(r.gd)}</td><td>${esc(r.pts)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">The table fills in after the first round of games on November 30.</div>';
+
+  if(D.updated){const u=new Date(D.updated);if(!isNaN(u)) $('upd').textContent=`Last updated ${DAY[u.getDay()]} ${u.getDate()} ${MON[u.getMonth()]} ${u.getFullYear()}. Updated weekly on Fridays.`;}
+}
+
+render(FALLBACK);
+fetch('data.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{if(d) render(d)}).catch(()=>{});
+}
+</script>
+</body>
+</html>
