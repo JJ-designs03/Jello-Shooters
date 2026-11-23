@@ -140,6 +140,7 @@ let games=store.get("js-games",[{n:1,date:"2026-11-30",opp:"Kicki Sippi"}].conca
 let cur=store.get("js-cur",1),half=store.get("js-half",1);
 let tallies=store.get("js-tallies",{}),ended=store.get("js-ended",{}),changedAt=store.get("js-changed",{});
 let signedIn=false;
+const SCORERS=["elitetracker.gaming@gmail.com","mackjwalsh7@gmail.com"];
 
 const evs=()=>tallies[cur]||(tallies[cur]=[]);
 const count=(t,list)=>list.filter(e=>e.t===t).length;
@@ -207,9 +208,9 @@ const provider=new GoogleAuthProvider();
 $("gbtn").addEventListener("click",async()=>{try{await signInWithPopup(auth,provider)}catch(e){if(e&&(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment"))signInWithRedirect(auth,provider);else $("log").textContent="Sign-in didn't finish: "+(e&&e.code||"try again")}});
 getRedirectResult(auth).catch(()=>{});
 onAuthStateChanged(auth,u=>{
-  signedIn=!!u&&u.email==="elitetracker.gaming@gmail.com";
+  signedIn=!!u&&SCORERS.includes((u.email||"").toLowerCase());
   $("signin").hidden=signedIn;
-  if(u&&!signedIn)$("log").textContent=`Signed in as ${u.email}, which can't update the score. Use elitetracker.gaming@gmail.com.`;
+  if(u&&!signedIn)$("log").textContent=`Signed in as ${u.email}, which isn't on the scorer list. Ask Janis to add it.`;
   if(signedIn){$("log").textContent="Signed in. Taps go live on the team website.";pushLive()}
 });
 
