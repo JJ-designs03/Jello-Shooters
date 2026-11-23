@@ -88,7 +88,7 @@ dialog button.p{background:#123d1f;color:#fff}
     </div>
     <div class="mini">
       <div><b id="m-shots">0</b><span>Shots</span></div>
-      <div><b id="m-ot">0</b><span>On target</span></div>
+      <div><b id="m-ot">0</b><span id="m-acc">On target</span></div>
       <div><b id="m-saves">0</b><span>Saves</span></div>
       <div><b id="m-tackles">0</b><span>Tackles</span></div>
     </div>
@@ -153,7 +153,7 @@ function renderGames(){const sel=$("game");sel.replaceChildren();for(const g of 
 function render(){
   const g=gameOf(cur),list=evs(),T=totals(list);
   $("gf").textContent=T.gf;$("ga").textContent=T.ga;$("opp").textContent=g.opp||"Opponent";$("when").textContent=g.date?fmtDate(g.date):"Game "+cur;
-  $("m-shots").textContent=T.shots;$("m-ot").textContent=T.ot;$("m-saves").textContent=T.saves;$("m-tackles").textContent=T.tackles;
+  $("m-shots").textContent=T.shots;$("m-ot").textContent=T.ot;$("m-acc").textContent=T.shots?`On target · ${Math.round(T.ot/T.shots*100)}%`:"On target";$("m-saves").textContent=T.saves;$("m-tackles").textContent=T.tackles;
   $("h1").setAttribute("aria-pressed",half===1);$("h2").setAttribute("aria-pressed",half===2);
   const st=ended[cur]?"ft":list.length?"live":"none",el=$("status");el.className="status"+(st==="live"?" on":"");el.textContent=st==="live"?"Live":st==="ft"?"Full time":"Not started";
   const f=$("feed");f.replaceChildren();const items=list.slice(-8).reverse();f.hidden=!items.length;
