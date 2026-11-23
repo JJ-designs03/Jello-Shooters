@@ -202,7 +202,7 @@ footer .wrap{display:flex;gap:10px 28px;flex-wrap:wrap;justify-content:space-bet
 </div></section>
 
 <footer class="band"><div class="wrap">
-  <span id="upd">Updated weekly on Fridays.</span>
+  <span id="upd">Updated every morning.</span>
   <a id="src" href="https://www.ottawafootysevens.com/league_fixtures.seam?divisionId=6689">Official schedule on Ottawa Footy Sevens</a>
 </div></footer>
 
@@ -274,7 +274,7 @@ function render(D){
 
   renderRace(D,team,games);
   window.applyLive&&window.applyLive();
-  if(D.updated){const u=new Date(D.updated);if(!isNaN(u)) $('upd').textContent=`Last updated ${DAY[u.getDay()]} ${u.getDate()} ${MON[u.getMonth()]} ${u.getFullYear()}. Updated weekly on Fridays.`;}
+  if(D.updated){const u=new Date(D.updated);if(!isNaN(u)) $('upd').textContent=`Last updated ${DAY[u.getDay()]} ${u.getDate()} ${MON[u.getMonth()]} ${u.getFullYear()}. Updated every morning.`;}
 }
 
 

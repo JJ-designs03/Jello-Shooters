@@ -188,7 +188,7 @@ async function save(){
   try{
     await set(ref(fdb,"matches/g"+cur),{n:cur,date:g.date||"",opp:g.opp||"",gf:T.gf,ga:T.ga,shots:T.shots,onTarget:T.ot,saves:T.saves,tackles:T.tackles,halfTime:{gf:h1.gf,ga:h1.ga},events:evs().length,savedAt:new Date().toISOString()});
     ended[cur]=true;changed(`Saved Game ${cur}.`);
-    await dialog("Saved",box("Saved. The website shows full time, and Friday's update copies these numbers into your sheet. Save again any time to replace them.",summary()),[["Done",0,true]]);
+    await dialog("Saved",box("Saved. The website shows full time, and the next morning's update copies these numbers into your sheet. Save again any time to replace them.",summary()),[["Done",0,true]]);
   }catch(e){await dialog("Didn't save",box("Couldn't reach the database. Your taps are still on this phone. Try again, or copy the summary:",summary()),[["Close",0,true]])}
   finally{$("save").disabled=false;$("save").textContent="Save match"}
 }
@@ -199,7 +199,7 @@ $("h1").addEventListener("click",()=>{half=1;changed()});
 $("h2").addEventListener("click",()=>{half=2;changed("Second half. Taps now count for the 2nd half.")});
 $("game").addEventListener("change",e=>{cur=Number(e.target.value);half=1;changed()});
 $("save").addEventListener("click",save);
-$("ft").addEventListener("click",()=>{if(ended[cur]){delete ended[cur];changed("Match reopened.")}else{ended[cur]=true;changed("Full time. Tap Save match to keep the numbers for Friday's update.")}});
+$("ft").addEventListener("click",()=>{if(ended[cur]){delete ended[cur];changed("Match reopened.")}else{ended[cur]=true;changed("Full time. Tap Save match to keep the numbers for the next morning's update.")}});
 $("reset").addEventListener("click",async()=>{if(await dialog("Clear this game?",box(`This deletes every tap for Game ${cur} on this phone and resets the live score. The sheet isn't changed.`),[["Cancel",false],["Clear",true,true]])){tallies[cur]=[];delete ended[cur];changed("Cleared.")}});
 $("copy").addEventListener("click",async()=>{const s=summary();try{await navigator.clipboard.writeText(s);$("log").textContent="Summary copied."}catch(e){await dialog("Summary",box("Copy this:",s),[["Close",0,true]])}});
 
